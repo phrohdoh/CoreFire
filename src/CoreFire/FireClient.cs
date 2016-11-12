@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
 
 namespace CoreFire
 {
     public class FireClientBuilder
     {
-        string url;
+        Uri uri;
         string authToken;
 
         // We do not want any public ctors.
@@ -13,15 +16,15 @@ namespace CoreFire
 
         public static FireClientBuilder Create() => new FireClientBuilder();
 
-        /// <param name="url">The firebase URL of your db.</param>
-        /// <c>FireClient.Create().WithUrl("http://your-db.firebaseio.com");</c>
-        public FireClientBuilder WithUrl(string url)
+        /// <param name="uri">The firebase URI of your db.</param>
+        /// <c>FireClient.Create().WithUri("http://your-db.firebaseio.com");</c>
+        public FireClientBuilder WithUri(Uri uri)
         {
-            this.url = url;
+            this.uri = uri;
             return this;
         }
 
-        /// <param name="url">The firebase URL of your db.</param>
+        /// <param name="uri">The firebase URI of your db.</param>
         /// <c>FireClient.Create().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
         public FireClientBuilder WithAuth(string authToken)
         {
@@ -33,7 +36,7 @@ namespace CoreFire
         {
             return new FireClient
             {
-                Url = url,
+                Uri = uri,
                 AuthToken = authToken,
             };
         }
@@ -43,14 +46,48 @@ namespace CoreFire
     {
         public readonly Dictionary<string, string> RequestParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public string Url;
+        public Uri Uri;
         public string AuthToken;
 
         internal FireClient() { }
 
-        public bool IsValid()
+        public HttpResponseMessage PushSync(string absolutePath, string str)
         {
-            return !string.IsNullOrWhiteSpace(Url);
+            if (!absolutePath.StartsWith("/"))
+                absolutePath = "/" + absolutePath;
+
+            if (absolutePath.EndsWith("/"))
+                absolutePath = absolutePath.Substring(0, absolutePath.Length - 2);
+
+            if (!absolutePath.EndsWith(".json"))
+                absolutePath += ".json";
+
+            var builder = new UriBuilder(Uri);
+            builder.Path = string.Join("/", GetStringSegmentsWithoutTrailingDotJson()) + absolutePath;
+
+            var finalUri = builder.Uri;
+            Console.WriteLine(finalUri);
+
+            using (var client = new HttpClient())
+                 return client.PostAsync(finalUri, new StringContent(str)).Result; // TODO: send JSON
+        }
+
+        /// <summary>
+        /// Remove '.json'<br/>
+        /// We may have '/foo/bar.json' and want '/foo/bar/baz.json'
+        /// </summary>
+        string[] GetStringSegmentsWithoutTrailingDotJson()
+        {
+            var segments = new List<string>();
+            foreach (var seg in Uri.Segments)
+            {
+                if (string.IsNullOrWhiteSpace(seg) || seg == "/")
+                    continue;
+
+                segments.Add(seg.Replace(".json", "").Replace("/", ""));
+            }
+
+            return segments.ToArray();
         }
     }
 }

@@ -5,21 +5,29 @@ class Program
 {
     static void Main(string[] args)
     {
-        if (args.Length != 2)
+        if (args.Length != 3)
         {
-            Console.WriteLine("Please supply <url> <auth> in that order.");
-            Console.WriteLine("  CoreFireConsoleApp.exe https://your-db.firebaseio.com/ spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");
+            Console.WriteLine("Please supply <uri> <auth> <name> in that order.");
+            Console.WriteLine("  CoreFireConsoleApp.exe https://your-db.firebaseio.com/ spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA YourFirstName");
             Environment.Exit(1);
         }
 
-        var url = args[0];
+        var uri = new Uri(args[0]);
+        if (uri.Scheme != "https")
+        {
+            Console.WriteLine("Uri's scheme must be https");
+            Environment.Exit(2);
+        }
+
         var auth = args[1];
 
         var client = FireClientBuilder.Create()
-            .WithUrl(url)
+            .WithUri(uri)
             .WithAuth(auth)
             .Build();
 
-        Console.WriteLine(client.IsValid());
+        var name = args[2];
+        var pushResponse = client.PushSync("/names", name);
+        Console.WriteLine(pushResponse/*.AbsolutePath*/);
     }
 }
