@@ -4,6 +4,13 @@
 
 This section to be filled out with examples and documentation links.
 
+## Development
+
+You will need:
+
+* .NET Core (https://www.microsoft.com/net/core)
+* dotnet-cli (https://github.com/dotnet/cli/) preview3 or later
+
 ## LICENSE
 
 AGPLv3 by default but an MIT license is available for purchase.
