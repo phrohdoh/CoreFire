@@ -1,9 +1,18 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace ClassLibrary
+namespace CoreFire
 {
-    public class Class1
+    public enum RequestMethod
+    {
+        Get,
+        Post,
+        Put,
+        Patch,
+        Delete,
+    }
+
+    public class RequestHelper
     {
         public string MakeSyncHttpGet(string url)
         {
