@@ -26,5 +26,8 @@ class Program
         var name = args[1];
         var pushResponse = client.PushSync("/names", name);
         Console.WriteLine(pushResponse/*.AbsolutePath*/);
+
+        var getResponse = client.GetSync("/names");
+        Console.WriteLine(getResponse);
     }
 }

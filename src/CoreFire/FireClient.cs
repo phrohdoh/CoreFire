@@ -54,6 +54,25 @@ namespace CoreFire
 
         public HttpResponseMessage PushSync(string absolutePath, object content)
         {
+            var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
+
+            using (var client = new HttpClient())
+            {
+                var json = JsonConvert.SerializeObject(content);
+                return client.PostAsync(finalUri, new StringContent(json)).Result;
+            }
+        }
+
+        public HttpResponseMessage GetSync(string absolutePath)
+        {
+            var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
+
+            using (var client = new HttpClient())
+                return client.GetAsync(finalUri).Result;
+        }
+
+        Uri BuildFinalUriFromAbsolutePath(string absolutePath)
+        {
             if (!absolutePath.StartsWith("/"))
                 absolutePath = "/" + absolutePath;
 
@@ -69,14 +88,7 @@ namespace CoreFire
             if (!string.IsNullOrWhiteSpace(AuthToken))
                 builder.Query += "auth=" + AuthToken;
 
-            var finalUri = builder.Uri;
-            Console.WriteLine(finalUri);
-
-            using (var client = new HttpClient())
-            {
-                var json = JsonConvert.SerializeObject(content);
-                return client.PostAsync(finalUri, new StringContent(json)).Result;
-            }
+            return builder.Uri;
         }
 
         /// <summary>
