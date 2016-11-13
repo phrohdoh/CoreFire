@@ -5,10 +5,10 @@ class Program
 {
     static void Main(string[] args)
     {
-        if (args.Length != 3)
+        if (args.Length != 2)
         {
-            Console.WriteLine("Please supply <uri> <auth> <name> in that order.");
-            Console.WriteLine("  CoreFireConsoleApp.exe https://your-db.firebaseio.com/ spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA YourFirstName");
+            Console.WriteLine("Please supply <uri> <name> in that order.");
+            Console.WriteLine("  CoreFireConsoleApp.exe https://your-db.firebaseio.com/ YourFirstName");
             Environment.Exit(1);
         }
 
@@ -19,14 +19,11 @@ class Program
             Environment.Exit(2);
         }
 
-        var auth = args[1];
-
         var client = FireClientBuilder.Create()
             .WithUri(uri)
-            .WithAuth(auth)
             .Build();
 
-        var name = args[2];
+        var name = args[1];
         var pushResponse = client.PushSync("/names", name);
         Console.WriteLine(pushResponse/*.AbsolutePath*/);
     }
