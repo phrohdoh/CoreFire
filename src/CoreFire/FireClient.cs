@@ -66,6 +66,9 @@ namespace CoreFire
             var builder = new UriBuilder(Uri);
             builder.Path = string.Join("/", GetStringSegmentsWithoutTrailingDotJson()) + absolutePath;
 
+            if (!string.IsNullOrWhiteSpace(AuthToken))
+                builder.Query += "auth=" + AuthToken;
+
             var finalUri = builder.Uri;
             Console.WriteLine(finalUri);
 
