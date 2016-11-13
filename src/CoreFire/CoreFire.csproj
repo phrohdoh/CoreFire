@@ -18,6 +18,12 @@
       <Version>1.0.0-alpha-20161104-2</Version>
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json"
+      Version="9.0.2-beta1"
+      CopyLocal="true"/>
+    <PackageReference Include="System.Runtime.Serialization.Primitives"
+      Version="4.3.0-preview1-24530-04"
+      CopyLocal="true"/>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">

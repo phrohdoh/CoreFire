@@ -7,16 +7,16 @@ Help:
 	@echo "  make CoreFire"
 	@echo "  make CoreFireConsoleApp"
 
+Clean:
+	@cd src/CoreFire && dotnet clean
+	@cd src/CoreFireConsoleApp && dotnet clean
+
+All: CoreFire CoreFireConsoleApp
+
 CoreFire:
 	@cd src/CoreFire && dotnet restore && dotnet build
 
 CoreFireConsoleApp:
 	@cd src/CoreFireConsoleApp && dotnet restore && dotnet build
 
-All: CoreFire CoreFireConsoleApp
-
-Clean:
-	@cd src/CoreFire && dotnet clean
-	@cd src/CoreFireConsoleApp && dotnet clean
-
-.PHONY: Help CoreFire CoreFireConsoleApp Clean All
+.PHONY: Help Clean All CoreFire CoreFireConsoleApp

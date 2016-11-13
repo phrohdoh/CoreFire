@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 namespace CoreFire
 {
@@ -51,7 +52,7 @@ namespace CoreFire
 
         internal FireClient() { }
 
-        public HttpResponseMessage PushSync(string absolutePath, string str)
+        public HttpResponseMessage PushSync(string absolutePath, object content)
         {
             if (!absolutePath.StartsWith("/"))
                 absolutePath = "/" + absolutePath;
@@ -69,7 +70,10 @@ namespace CoreFire
             Console.WriteLine(finalUri);
 
             using (var client = new HttpClient())
-                 return client.PostAsync(finalUri, new StringContent(str)).Result; // TODO: send JSON
+            {
+                var json = JsonConvert.SerializeObject(content);
+                return client.PostAsync(finalUri, new StringContent(json)).Result;
+            }
         }
 
         /// <summary>
