@@ -11,6 +11,10 @@ You will need:
 * .NET Core (https://www.microsoft.com/net/core)
 * dotnet-cli (https://github.com/dotnet/cli/) preview3 or later
 
+## TODO
+
+* Fix CopyLocal/Private in csproj to copy deps to output directory
+
 ## LICENSE
 
 AGPLv3 by default but an MIT license is available for purchase.
