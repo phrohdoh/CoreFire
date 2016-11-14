@@ -15,10 +15,11 @@ namespace CoreFire
         // We do not want any public ctors.
         FireClientBuilder() { }
 
-        public static FireClientBuilder Create() => new FireClientBuilder();
+        public static FireClientBuilder New() => new FireClientBuilder();
+        public FireClient Build() => FireClient.New(uri, authToken);
 
         /// <param name="uri">The firebase URI of your db.</param>
-        /// <c>FireClient.Create().WithUri("http://your-db.firebaseio.com");</c>
+        /// <c>FireClientBuilder.New().WithUri("http://your-db.firebaseio.com");</c>
         public FireClientBuilder WithUri(Uri uri)
         {
             this.uri = uri;
@@ -26,20 +27,11 @@ namespace CoreFire
         }
 
         /// <param name="uri">The firebase URI of your db.</param>
-        /// <c>FireClient.Create().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
+        /// <c>FireClientBuilder.New().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
         public FireClientBuilder WithAuth(string authToken)
         {
             this.authToken = authToken;
             return this;
-        }
-
-        public FireClient Build()
-        {
-            return new FireClient
-            {
-                Uri = uri,
-                AuthToken = authToken,
-            };
         }
     }
 
@@ -54,10 +46,16 @@ namespace CoreFire
     {
         public readonly Dictionary<string, string> RequestParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        public Uri Uri;
-        public string AuthToken;
+        public Uri Uri { get; private set; }
+        public string AuthToken { get; private set; }
 
-        internal FireClient() { }
+        public bool IsAuthed => !string.IsNullOrWhiteSpace(AuthToken);
+
+        internal static FireClient New(Uri uri, string authToken) => new FireClient
+        {
+            Uri = uri,
+            AuthToken = authToken,
+        };
 
         // I do not know how Firebase intends for users to
         // push/append onto an array.
@@ -76,19 +74,17 @@ namespace CoreFire
         // 4) Set /foo
         public string PushSync(string absolutePath, object content)
         {
+            var json = JsonConvert.SerializeObject(content);
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
             var absPath = finalUri.AbsolutePath;
+            var path = absPath.Substring(0, absPath.LastIndexOf(".json"));
 
             using (var client = new HttpClient())
+            using (var response = client.PostAsync(finalUri, new StringContent(json)).Result)
             {
-                var json = JsonConvert.SerializeObject(content);
-                using (var response = client.PostAsync(finalUri, new StringContent(json)).Result)
-                {
-                    var responseContent = response.Content.ReadAsStringAsync().Result;
-                    var responseObj = JsonConvert.DeserializeObject<PushResponseObject>(responseContent);
-                    var path = absPath.Substring(0, absPath.LastIndexOf(".json"));
-                    return path + "/" + responseObj.Name;
-                }
+                var responseContent = response.Content.ReadAsStringAsync().Result;
+                var responseObj = JsonConvert.DeserializeObject<PushResponseObject>(responseContent);
+                return path + "/" + responseObj.Name;
             }
         }
 
@@ -128,7 +124,7 @@ namespace CoreFire
             var builder = new UriBuilder(Uri);
             builder.Path = string.Join("/", GetStringSegmentsWithoutTrailingDotJson()) + absolutePath;
 
-            if (!string.IsNullOrWhiteSpace(AuthToken))
+            if (IsAuthed)
                 builder.Query += "auth=" + AuthToken;
 
             return builder.Uri;

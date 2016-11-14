@@ -19,7 +19,7 @@ class Program
             Environment.Exit(2);
         }
 
-        var client = FireClientBuilder.Create()
+        var client = FireClientBuilder.New()
             .WithUri(uri)
             .Build();
 
@@ -27,8 +27,7 @@ class Program
         var pushResponse = client.PushSync("/names", new[] { name, "test" });
         Console.WriteLine(pushResponse);
 
-        var setResponse = client.SetSync("/names", new[] { "test1", "test2" });
-        Console.WriteLine(setResponse);
+        client.SetSync("/names", new[] { "test1", "test2" });
 
         var getResponse = client.GetSync<string[]>("/names");
         Console.WriteLine(string.Join(", ", getResponse));
