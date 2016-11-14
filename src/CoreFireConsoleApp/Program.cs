@@ -15,6 +15,7 @@ class Program
         var uri = new Uri(args[0]);
         if (uri.Scheme != "https")
         {
+            // TODO: Move this into FireClient(Builder)
             Console.WriteLine("Uri's scheme must be https");
             Environment.Exit(2);
         }
