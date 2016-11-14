@@ -5,6 +5,7 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>CoreFire</AssemblyName>
+    <DocumentationFile>$(OutputPath)$(MSBuildProjectName).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
