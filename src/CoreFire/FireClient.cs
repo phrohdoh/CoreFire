@@ -94,15 +94,12 @@ namespace CoreFire
 
         public void SetSync(string absolutePath, object content)
         {
+            var json = JsonConvert.SerializeObject(content);
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
-            var absPath = finalUri.AbsolutePath;
 
             using (var client = new HttpClient())
-            {
-                var json = JsonConvert.SerializeObject(content);
-                using (var _ = client.PutAsync(finalUri, new StringContent(json)).Result)
-                { }
-            }
+            using (var _ = client.PutAsync(finalUri, new StringContent(json)).Result)
+            { }
         }
 
         public T GetSync<T>(string absolutePath)
