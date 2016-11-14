@@ -24,10 +24,13 @@ class Program
             .Build();
 
         var name = args[1];
-        var pushResponse = client.PushSync("/names", name);
-        Console.WriteLine(pushResponse/*.AbsolutePath*/);
+        var pushResponse = client.PushSync("/names", new[] { name, "test" });
+        Console.WriteLine(pushResponse);
 
-        var getResponse = client.GetSync("/names");
-        Console.WriteLine(getResponse);
+        var setResponse = client.SetSync("/names", new[] { "test1", "test2" });
+        Console.WriteLine(setResponse);
+
+        var getResponse = client.GetSync<string[]>("/names");
+        Console.WriteLine(string.Join(", ", getResponse));
     }
 }

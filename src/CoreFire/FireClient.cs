@@ -43,6 +43,13 @@ namespace CoreFire
         }
     }
 
+    /// <summary>Used to get the path resulting from a Push</summary>
+    struct PushResponseObject
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+    }
+
     public class FireClient
     {
         public readonly Dictionary<string, string> RequestParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -52,23 +59,56 @@ namespace CoreFire
 
         internal FireClient() { }
 
-        public HttpResponseMessage PushSync(string absolutePath, object content)
+        // I do not know how Firebase intends for users to
+        // push/append onto an array.
+        //
+        // Take for example:
+        // /foo = [ "bar", "baz" ]
+        // client.PushSync("/foo", "qux");
+        //
+        // I would expect:
+        // /foo = [ "bar", "baz", "qux" ]
+        public string PushSync(string absolutePath, object content)
         {
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
+            var absPath = finalUri.AbsolutePath;
 
             using (var client = new HttpClient())
             {
                 var json = JsonConvert.SerializeObject(content);
-                return client.PostAsync(finalUri, new StringContent(json)).Result;
+                using (var response = client.PostAsync(finalUri, new StringContent(json)).Result)
+                {
+                    var responseContent = response.Content.ReadAsStringAsync().Result;
+                    var responseObj = JsonConvert.DeserializeObject<PushResponseObject>(responseContent);
+                    var path = absPath.Substring(0, absPath.LastIndexOf(".json"));
+                    return path + "/" + responseObj.Name;
+                }
             }
         }
 
-        public HttpResponseMessage GetSync(string absolutePath)
+        public void SetSync(string absolutePath, object content)
+        {
+            var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
+            var absPath = finalUri.AbsolutePath;
+
+            using (var client = new HttpClient())
+            {
+                var json = JsonConvert.SerializeObject(content);
+                using (var _ = client.PutAsync(finalUri, new StringContent(json)).Result)
+                { }
+            }
+        }
+
+        public T GetSync<T>(string absolutePath)
         {
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
 
             using (var client = new HttpClient())
-                return client.GetAsync(finalUri).Result;
+            using (var response = client.GetAsync(finalUri).Result)
+            {
+                var content = response.Content.ReadAsStringAsync().Result;
+                return JsonConvert.DeserializeObject<T>(content);
+            }
         }
 
         Uri BuildFinalUriFromAbsolutePath(string absolutePath)
