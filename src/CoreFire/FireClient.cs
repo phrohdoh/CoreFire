@@ -26,7 +26,7 @@ namespace CoreFire
             return this;
         }
 
-        /// <param name="uri">The firebase URI of your db.</param>
+        /// <param name="uri">The authentication token of your db.</param>
         /// <c>FireClientBuilder.New().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
         public FireClientBuilder WithAuth(string authToken)
         {
