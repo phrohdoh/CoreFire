@@ -68,6 +68,12 @@ namespace CoreFire
         //
         // I would expect:
         // /foo = [ "bar", "baz", "qux" ]
+        //
+        // Instead it seems I have to:
+        // 1) Get /foo
+        // 2) Deserialize the result
+        // 3) Mutate the resulting object
+        // 4) Set /foo
         public string PushSync(string absolutePath, object content)
         {
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
