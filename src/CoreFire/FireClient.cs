@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using Newtonsoft.Json;
 
@@ -10,13 +8,16 @@ namespace CoreFire
     public class FireClientBuilder
     {
         Uri uri;
+
+        /* TODO: Implement authentication
         string authToken;
+        */
 
         // We do not want any public ctors.
         FireClientBuilder() { }
 
         public static FireClientBuilder New() => new FireClientBuilder();
-        public FireClient Build() => FireClient.New(uri, authToken);
+        public FireClient Build() => FireClient.New(uri/*, authToken*/);
 
         /// <param name="uri">The firebase URI of your db.</param>
         /// <c>FireClientBuilder.New().WithUri("http://your-db.firebaseio.com");</c>
@@ -26,13 +27,16 @@ namespace CoreFire
             return this;
         }
 
-        /// <param name="uri">The authentication token of your db.</param>
+        /* TODO: The auth process has _completely_ changed.
+        /* ref https://github.com/google/google-api-java-client/blob/dev/google-api-client/src/main/java/com/google/api/client/googleapis/auth/oauth2/GoogleCredential.java#L360
+        /// <param name="authToken">The authentication token of your db.</param>
         /// <c>FireClientBuilder.New().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
         public FireClientBuilder WithAuth(string authToken)
         {
             this.authToken = authToken;
             return this;
         }
+        */
     }
 
     /// <summary>Used to get the path resulting from a Push</summary>
@@ -44,17 +48,20 @@ namespace CoreFire
 
     public class FireClient
     {
-        public readonly Dictionary<string, string> RequestParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        ///<summary>Will be used to store orderBy, etc.</summary>
+        readonly Dictionary<string, string> requestParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public Uri Uri { get; private set; }
+
+        /* TODO: Implement authentication
         public string AuthToken { get; private set; }
-
         public bool IsAuthed => !string.IsNullOrWhiteSpace(AuthToken);
+        */
 
-        internal static FireClient New(Uri uri, string authToken) => new FireClient
+        internal static FireClient New(Uri uri/*, string authToken*/) => new FireClient
         {
             Uri = uri,
-            AuthToken = authToken,
+            // AuthToken = authToken, // TODO: Implement authentication
         };
 
         // I do not know how Firebase intends for users to
@@ -72,6 +79,9 @@ namespace CoreFire
         // 2) Deserialize the result
         // 3) Mutate the resulting object
         // 4) Set /foo
+
+        /// <summary>Push to an object in Firebase located at `absolutePath`</summary>
+        /// <returns>Absolute path to the pushed `content` object in Firebase</returns>
         public string PushSync(string absolutePath, object content)
         {
             var json = JsonConvert.SerializeObject(content);
@@ -88,6 +98,7 @@ namespace CoreFire
             }
         }
 
+        /// <summary>Set an object in Firebase located at `absolutePath`</summary>
         public void SetSync(string absolutePath, object content)
         {
             var json = JsonConvert.SerializeObject(content);
@@ -98,6 +109,8 @@ namespace CoreFire
             { }
         }
 
+        /// <summary>Get an object out of Firebase located at `absolutePath`</summary>
+        /// <returns>An object of type `T`</returns>
         public T GetSync<T>(string absolutePath)
         {
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
@@ -124,8 +137,10 @@ namespace CoreFire
             var builder = new UriBuilder(Uri);
             builder.Path = string.Join("/", GetStringSegmentsWithoutTrailingDotJson()) + absolutePath;
 
+            /* TODO: Implement authentication
             if (IsAuthed)
                 builder.Query += "auth=" + AuthToken;
+            */
 
             return builder.Uri;
         }
