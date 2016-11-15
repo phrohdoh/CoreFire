@@ -14,9 +14,8 @@ namespace CoreFire
         */
 
         // We do not want any public ctors.
-        FireClientBuilder() { }
+        internal FireClientBuilder() { }
 
-        public static FireClientBuilder New() => new FireClientBuilder();
         public FireClient Build() => FireClient.New(uri/*, authToken*/);
 
         /// <param name="uri">The firebase URI of your db.</param>
@@ -46,6 +45,10 @@ namespace CoreFire
         public string Name { get; set; }
     }
 
+    /// <summary>
+    /// A client instance for pushing/setting/getting data to/from Firebase.<br/>
+    /// To get started call `FireClient.Builder()` to create a FireClientBuilder.
+    /// </summary>
     public class FireClient
     {
         ///<summary>Will be used to store orderBy, etc.</summary>
@@ -57,6 +60,8 @@ namespace CoreFire
         public string AuthToken { get; private set; }
         public bool IsAuthed => !string.IsNullOrWhiteSpace(AuthToken);
         */
+
+        public static FireClientBuilder Builder() => new FireClientBuilder();
 
         internal static FireClient New(Uri uri/*, string authToken*/) => new FireClient
         {

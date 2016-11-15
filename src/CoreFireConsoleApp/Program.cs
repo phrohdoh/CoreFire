@@ -20,12 +20,12 @@ class Program
             Environment.Exit(2);
         }
 
-        var client = FireClientBuilder.New()
+        var client = FireClient.Builder()
             .WithUri(uri)
             .Build();
 
         var name = args[1];
-        var pushResponse = client.PushSync("/names", new[] { name, "test" });
+        var pushResponse = client.PushSync("/names", new[] { name });
         Console.WriteLine(pushResponse);
 
         client.SetSync("/names", new[] { "test1", "test2" });

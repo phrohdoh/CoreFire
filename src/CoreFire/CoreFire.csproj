@@ -2,6 +2,10 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
   
   <PropertyGroup>
+    <AssemblyVersion>0.1.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>CoreFire</AssemblyName>
