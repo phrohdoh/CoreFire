@@ -14,6 +14,7 @@ You will need:
 ## TODO
 
 * Fix CopyLocal/Private in csproj to copy deps to output directory
+  * This has been worked around via an AfterBuild Target in `CoreFireConsoleApp.csproj`
 
 ## LICENSE
 

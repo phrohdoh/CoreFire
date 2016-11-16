@@ -23,6 +23,15 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+
+  <Target Name="AfterBuild">
+    <Copy
+      SourceFiles="..\..\shared-libs\Newtonsoft.Json.dll"
+      DestinationFolder="bin/Debug/netstandard1.0/"/>
+    <Copy
+      SourceFiles="..\..\shared-libs\System.Runtime.Serialization.Primitives.dll"
+      DestinationFolder="bin/Debug/netstandard1.0/"/>
+  </Target>
   
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
