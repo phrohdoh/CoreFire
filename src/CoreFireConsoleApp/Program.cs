@@ -20,7 +20,7 @@ class Program
             Environment.Exit(2);
         }
 
-        var client = FireClient.Builder()
+        var client = Client.Builder()
             .WithUri(uri)
             .Build();
 
@@ -32,5 +32,15 @@ class Program
 
         var getResponse = client.GetSync<string[]>("/names");
         Console.WriteLine(string.Join(", ", getResponse));
+
+        try
+        {
+            client.PushSync(null, null);
+        }
+        catch (ClientException ex)
+        {
+            var inner = ex.InnerException;
+            Console.WriteLine($"Caught expected \"{inner.Message}\"");
+        }
     }
 }

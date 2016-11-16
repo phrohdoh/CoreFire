@@ -5,7 +5,8 @@ using Newtonsoft.Json;
 
 namespace CoreFire
 {
-    public class FireClientBuilder
+    /// <summary>Builds `Client` objects via method chaining</summary>
+    public class ClientBuilder
     {
         Uri uri;
 
@@ -14,13 +15,14 @@ namespace CoreFire
         */
 
         // We do not want any public ctors.
-        internal FireClientBuilder() { }
+        internal ClientBuilder() { }
 
-        public FireClient Build() => FireClient.New(uri/*, authToken*/);
+        /// <summary>Instantiates a `Client` with the settings you have chosen.</summary>
+        public Client Build() => Client.New(uri/*, authToken*/);
 
         /// <param name="uri">The firebase URI of your db.</param>
-        /// <c>FireClientBuilder.New().WithUri("http://your-db.firebaseio.com");</c>
-        public FireClientBuilder WithUri(Uri uri)
+        /// <c>ClientBuilder.New().WithUri("http://your-db.firebaseio.com");</c>
+        public ClientBuilder WithUri(Uri uri)
         {
             this.uri = uri;
             return this;
@@ -29,8 +31,8 @@ namespace CoreFire
         /* TODO: The auth process has _completely_ changed.
         /* ref https://github.com/google/google-api-java-client/blob/dev/google-api-client/src/main/java/com/google/api/client/googleapis/auth/oauth2/GoogleCredential.java#L360
         /// <param name="authToken">The authentication token of your db.</param>
-        /// <c>FireClientBuilder.New().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
-        public FireClientBuilder WithAuth(string authToken)
+        /// <c>ClientBuilder.New().WithAuth("spqiQHnlwA6uS6Ur8H3ZrJinHbX951DzDySazIA");</c>
+        public ClientBuilder WithAuth(string authToken)
         {
             this.authToken = authToken;
             return this;
@@ -45,11 +47,17 @@ namespace CoreFire
         public string Name { get; set; }
     }
 
+    public class ClientException : Exception
+    {
+        internal ClientException(string message, Exception inner)
+            : base(message, inner) { }
+    }
+
     /// <summary>
     /// A client instance for pushing/setting/getting data to/from Firebase.<br/>
-    /// To get started call `FireClient.Builder()` to create a FireClientBuilder.
+    /// To get started call `Client.Builder()` to create a ClientBuilder.
     /// </summary>
-    public class FireClient
+    public class Client
     {
         ///<summary>Will be used to store orderBy, etc.</summary>
         readonly Dictionary<string, string> requestParams = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -61,9 +69,9 @@ namespace CoreFire
         public bool IsAuthed => !string.IsNullOrWhiteSpace(AuthToken);
         */
 
-        public static FireClientBuilder Builder() => new FireClientBuilder();
+        public static ClientBuilder Builder() => new ClientBuilder();
 
-        internal static FireClient New(Uri uri/*, string authToken*/) => new FireClient
+        internal static Client New(Uri uri/*, string authToken*/) => new Client
         {
             Uri = uri,
             // AuthToken = authToken, // TODO: Implement authentication
@@ -86,9 +94,20 @@ namespace CoreFire
         // 4) Set /foo
 
         /// <summary>Push to an object in Firebase located at `absolutePath`</summary>
-        /// <returns>Absolute path to the pushed `content` object in Firebase</returns>
+        /// <returns>Absolute path to the pushed `content` object in Firebase.</returns>
+        /// <exception cref="ClientException">
+        /// Thrown with inner <exception cref="ArgumentException"/> if <paramref name="absolutePath"/> is
+        /// null, empty, or whitespace-only.
+        /// </exception>
         public string PushSync(string absolutePath, object content)
         {
+            if (string.IsNullOrWhiteSpace(absolutePath))
+            {
+                var message = nameof(absolutePath) + " must not be null, empty, or whitespace-only";
+                var inner = new ArgumentException(message, nameof(absolutePath));
+                throw new ClientException(message, inner);
+            }
+
             var json = JsonConvert.SerializeObject(content);
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
             var absPath = finalUri.AbsolutePath;
@@ -104,8 +123,19 @@ namespace CoreFire
         }
 
         /// <summary>Set an object in Firebase located at `absolutePath`</summary>
+        /// <exception cref="ClientException">
+        /// Thrown with inner <exception cref="ArgumentException"/> if <paramref name="absolutePath"/> is
+        /// null, empty, or whitespace-only.
+        /// </exception>
         public void SetSync(string absolutePath, object content)
         {
+            if (string.IsNullOrWhiteSpace(absolutePath))
+            {
+                var message = nameof(absolutePath) + " must not be null, empty, or whitespace-only";
+                var inner = new ArgumentException(message, nameof(absolutePath));
+                throw new ClientException(message, inner);
+            }
+
             var json = JsonConvert.SerializeObject(content);
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
 
@@ -116,8 +146,19 @@ namespace CoreFire
 
         /// <summary>Get an object out of Firebase located at `absolutePath`</summary>
         /// <returns>An object of type `T`</returns>
+        /// <exception cref="ClientException">
+        /// Thrown with inner <exception cref="ArgumentException"/> if <paramref name="absolutePath"/> is
+        /// null, empty, or whitespace-only.
+        /// </exception>
         public T GetSync<T>(string absolutePath)
         {
+            if (string.IsNullOrWhiteSpace(absolutePath))
+            {
+                var message = nameof(absolutePath) + " must not be null, empty, or whitespace-only";
+                var inner = new ArgumentException(message, nameof(absolutePath));
+                throw new ClientException(message, inner);
+            }
+
             var finalUri = BuildFinalUriFromAbsolutePath(absolutePath);
 
             using (var client = new HttpClient())
