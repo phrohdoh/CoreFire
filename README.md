@@ -18,9 +18,7 @@ You will need:
 
 ## LICENSE
 
-AGPLv3 by default but an MIT license is available for purchase.
-
-Contact me at `purchase@phrohdoh.com` for purchase information.
+MIT
 
 ## Other
 
