@@ -4,6 +4,12 @@
 
 This section to be filled out with examples and documentation links.
 
+## NuGet
+
+https://www.nuget.org/packages/CoreFire/0.1.0-prerelease1
+
+`Install-Package CoreFire -Pre`
+
 ## Development
 
 You will need:
