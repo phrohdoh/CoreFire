@@ -16,6 +16,8 @@ You will need:
 * Fix CopyLocal/Private in csproj to copy deps to output directory
   * This has been worked around via an AfterBuild Target in `CoreFireConsoleApp.csproj`
 
+* Publish a `0.1.0` version once `Microsoft.NET.Sdk` is no longer `-alpha`
+
 ## LICENSE
 
 MIT
