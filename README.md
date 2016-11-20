@@ -26,6 +26,12 @@ Read the makefile for more information.
 
 * Publish a `0.1.0` version once `Microsoft.NET.Sdk` is no longer `-alpha`
 
+* Write docs and examples
+
+* Auth
+
+* Storage
+
 ## LICENSE
 
 MIT
