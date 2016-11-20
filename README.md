@@ -11,6 +11,14 @@ You will need:
 * .NET Core (https://www.microsoft.com/net/core)
 * dotnet-cli (https://github.com/dotnet/cli/) preview3 or later
 
+## Building
+
+On a system with `make` you can run `make All`.
+
+Otherwise you can run `dotnet restore && dotnet build` in `src/CoreFire`.
+
+Read the makefile for more information.
+
 ## TODO
 
 * Fix CopyLocal/Private in csproj to copy deps to output directory
