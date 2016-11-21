@@ -2,7 +2,16 @@
 
 ### A Firebase client library written for .NET Core
 
-This section to be filled out with examples and documentation links.
+```csharp
+using CoreFire;
+
+var uri = new Uri("https://mydb.firebaseio.com/");
+var client = Client.Builder()
+    .WithUri(uri)
+    .Build();
+
+client.PushSync("/now", DateTime.UtcNow);
+```
 
 ## NuGet
 
@@ -32,7 +41,9 @@ Read the makefile for more information.
 
 * Publish a `0.1.0` version once `Microsoft.NET.Sdk` is no longer `-alpha`
 
-* Write docs and examples
+* Write and auto-publish docs
+
+* Examples
 
 * Auth
 
