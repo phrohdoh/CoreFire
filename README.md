@@ -1,3 +1,13 @@
+**Note**:
+
+This project is unmaintaned (because I don't use Firebase anymore).
+
+If you want me to transfer ownership of this project, repo, etc to you just shoot me an email.
+
+There are probably other Firebase client implementations for .NET Core at this point that you should consider.
+
+---
+
 # `CoreFire`
 
 ### A Firebase client library written for .NET Core
